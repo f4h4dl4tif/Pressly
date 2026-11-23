@@ -27,6 +27,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         #if DEBUG
         DebugSnapshot.runIfRequested()
         if CommandLine.arguments.contains("--snapshot") { return }
+        if DebugSnapshot.runGlassIfRequested() { return }
         #endif
         if !settings.onboarded || !AXIsProcessTrusted() {
             WindowManager.shared.showOnboarding()

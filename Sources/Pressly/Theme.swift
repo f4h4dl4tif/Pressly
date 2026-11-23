@@ -21,6 +21,23 @@ extension SwitchProfile {
     var accentColor: Color { Color(hex: accent) }
 }
 
+// MARK: - Liquid Glass (macOS 26+)
+
+enum GlassTheme {
+    static var available: Bool { if #available(macOS 26, *) { return true } else { return false } }
+}
+
+extension View {
+    /// Draws Liquid Glass in `shape` when `on` (and on macOS 26+); otherwise leaves the view unchanged.
+    @ViewBuilder func glassSurface<S: Shape>(_ on: Bool, in shape: S, tint: Color? = nil) -> some View {
+        if on, #available(macOS 26, *) {
+            self.glassEffect(tint.map { SwiftUI.Glass.regular.tint($0) } ?? SwiftUI.Glass.regular, in: shape)
+        } else {
+            self
+        }
+    }
+}
+
 /// A sculpted keycap: dark skirt, lighter dished top, legend, and a press animation.
 struct KeycapView: View {
     var profile: SwitchProfile

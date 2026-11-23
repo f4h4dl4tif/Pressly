@@ -37,6 +37,8 @@ final class AppSettings: ObservableObject {
     @Published var menuIcon: String { didSet { d.set(menuIcon, forKey: "menuIcon") } }
     @Published var showSwitchHUD: Bool { didSet { d.set(showSwitchHUD, forKey: "showSwitchHUD") } }
     @Published var dynamicIcon: Bool { didSet { d.set(dynamicIcon, forKey: "dynamicIcon") } }
+    /// Liquid Glass look for the sidebar, hero card and pop-up (macOS 26+). Off by default.
+    @Published var glassTheme: Bool { didSet { d.set(glassTheme, forKey: "glassTheme") } }
 
     // Muting
     @Published var mutedApps: [String] { didSet { d.set(mutedApps, forKey: "mutedApps") } }
@@ -78,6 +80,7 @@ final class AppSettings: ObservableObject {
         menuIcon = v("menuIcon", "keyboard")
         showSwitchHUD = v("showSwitchHUD", true)
         dynamicIcon = v("dynamicIcon", true)
+        glassTheme = v("glassTheme", false)
         mutedApps = v("mutedApps", [])
         sleepGaming = v("sleepGaming", false)
         sleepScreenShare = v("sleepScreenShare", false)
@@ -97,6 +100,9 @@ final class AppSettings: ObservableObject {
     }
 
     var profile: SwitchProfile { SwitchProfile.named(switchID) }
+
+    /// The glass theme is on and this Mac can draw Liquid Glass.
+    var useGlass: Bool { glassTheme && GlassTheme.available }
 
     /// The app was called Thockly before 1.2: bring its settings and stats across once.
     private static func migrateFromThockly(_ d: UserDefaults) {

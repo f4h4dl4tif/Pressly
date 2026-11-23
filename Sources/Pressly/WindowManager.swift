@@ -135,8 +135,22 @@ struct HUDView: View {
             }
         }
         .padding(.horizontal, 22).padding(.vertical, 16)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).strokeBorder(Color.primary.opacity(0.08)))
+        .modifier(HUDBackground(glass: AppSettings.shared.useGlass))
         .padding(20)
+    }
+}
+
+/// The pop-up's backing: a material card, or Liquid Glass with the glass theme on.
+private struct HUDBackground: ViewModifier {
+    var glass: Bool
+    func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: 20, style: .continuous)
+        if glass {
+            content.glassSurface(true, in: shape)
+        } else {
+            content
+                .background(.regularMaterial, in: shape)
+                .overlay(shape.strokeBorder(Color.primary.opacity(0.08)))
+        }
     }
 }

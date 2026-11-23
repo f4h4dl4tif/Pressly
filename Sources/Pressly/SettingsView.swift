@@ -46,8 +46,18 @@ struct SettingsView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            sidebar
-            Divider()
+            if settings.useGlass {
+                // Liquid Glass: the sidebar floats as an inset glass panel over the window.
+                // It runs up under the title bar so the window controls sit inside it.
+                sidebar
+                    .glassSurface(true, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .padding(8)
+                    .ignoresSafeArea(.container, edges: .top)
+            } else {
+                sidebar
+                    .background(.ultraThinMaterial)
+                Divider()
+            }
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     Text(nav.page.title)
@@ -74,7 +84,7 @@ struct SettingsView: View {
                 Text("Pressly").font(.system(size: 17, weight: .bold, design: .rounded))
             }
             .padding(.horizontal, 10)
-            .padding(.top, 40)
+            .padding(.top, settings.useGlass ? 60 : 40)
             .padding(.bottom, 14)
 
             ForEach(SettingsPage.allCases) { p in
@@ -103,8 +113,7 @@ struct SettingsView: View {
             .padding(10)
         }
         .padding(.horizontal, 10)
-        .frame(width: 210)
-        .background(.ultraThinMaterial)
+        .frame(width: settings.useGlass ? 202 : 210)
     }
 
     @ViewBuilder private var page: some View {
@@ -149,6 +158,13 @@ struct GeneralPage: View {
                 ToggleRow(title: "Show pop-up when switching", subtitle: "A small badge when you change switches or turn sounds on or off.", symbol: "rectangle.on.rectangle", isOn: $settings.showSwitchHUD)
                 RowDivider()
                 ToggleRow(title: "Dynamic app icon", subtitle: "The Dock icon takes on the colour of your switch.", symbol: "app.dashed", isOn: Binding(get: { settings.dynamicIcon }, set: { settings.dynamicIcon = $0; WindowManager.shared.updateDockIcon() }))
+                RowDivider()
+                if GlassTheme.available {
+                    ToggleRow(title: "Liquid Glass theme", subtitle: "Use Liquid Glass for the sidebar, header card and pop-up.", symbol: "drop.halffull", isOn: $settings.glassTheme)
+                } else {
+                    ToggleRow(title: "Liquid Glass theme", subtitle: "Requires macOS 26.", symbol: "drop.halffull", isOn: .constant(false))
+                        .disabled(true)
+                }
             }
             Card(title: "Menu bar") {
                 ToggleRow(title: "Show menu bar icon", subtitle: "When hidden, open Pressly again from Applications to get back here.", symbol: "menubar.rectangle", isOn: $settings.showMenuIcon)
@@ -190,11 +206,23 @@ struct GeneralPage: View {
             }
         }
         .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(LinearGradient(colors: [settings.profile.accentColor.opacity(0.22), settings.profile.accentColor.opacity(0.05)], startPoint: .topLeading, endPoint: .bottomTrailing))
-        )
-        .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(settings.profile.accentColor.opacity(0.25)))
+        .modifier(HeroBackground(accent: settings.profile.accentColor, glass: settings.useGlass))
+    }
+}
+
+/// The General page's header card: an accent gradient, or tinted Liquid Glass with the glass theme on.
+private struct HeroBackground: ViewModifier {
+    var accent: Color
+    var glass: Bool
+    func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: 16, style: .continuous)
+        if glass {
+            content.glassSurface(true, in: shape, tint: accent.opacity(0.18))
+        } else {
+            content
+                .background(shape.fill(LinearGradient(colors: [accent.opacity(0.22), accent.opacity(0.05)], startPoint: .topLeading, endPoint: .bottomTrailing)))
+                .overlay(shape.strokeBorder(accent.opacity(0.25)))
+        }
     }
 }
 
