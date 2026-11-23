@@ -1,0 +1,126 @@
+PRESSLY — HOW TO INSTALL
+========================
+
+Requirements
+------------
+• macOS 14 Sonoma or later. Works on Apple silicon and Intel Macs.
+
+Install (installer package)
+---------------------------
+1. Double-click Pressly-1.2.pkg and follow the steps.
+   Pressly is installed in /Applications and opens automatically.
+2. The welcome window opens. Click "Open Accessibility Settings", then switch
+   Pressly ON in System Settings → Privacy & Security → Accessibility.
+3. Pick a switch and start typing. Pressly lives in your menu bar (keyboard icon).
+
+Switches (version 1.2)
+----------------------
+• Studio Recorded (top of the list): 15 real switches, such as NovelKeys Cream,
+  Gateron Black Ink, Holy Panda, Topre, Everglide Oreo, Cherry MX and IBM Buckling Spring.
+• Pressly Originals (bottom of the list, under "Pressly Originals" in the menu):
+  the 10 synthesized sounds from version 1.0.
+• Updating from 1.0 switches you to NovelKeys Cream once; your other settings stay.
+
+Coming from Thockly (the app's old name)
+----------------------------------------
+Pressly brings over your Thockly settings and typing stats on first launch.
+Remove the old app so you don't hear sounds twice:
+
+    pkill -x Thockly; rm -rf /Applications/Thockly.app
+    tccutil reset All app.thockly.Thockly
+• Credits and licenses for the recordings: Settings → About → Sound Credits & Licenses.
+
+Install (disk image)
+--------------------
+1. Open Pressly-1.2.dmg and drag Pressly into the Applications folder.
+2. Open Pressly from Applications, then follow steps 2–3 above.
+
+If macOS blocks the installer or the app
+-----------------------------------------
+This build isn't notarized by Apple, so macOS may say it "can't be opened".
+• Right-click (or Control-click) the file → Open → Open.
+• Or go to System Settings → Privacy & Security, scroll down and click "Open Anyway".
+• Or run these in Terminal (change the path if the file is somewhere else):
+
+    xattr -dr com.apple.quarantine ~/Downloads/Pressly-1.2.pkg
+    xattr -dr com.apple.quarantine ~/Downloads/Pressly-1.2.dmg
+
+If the app itself is blocked after installing:
+
+    sudo xattr -cr /Applications/Pressly.app
+
+If double-clicking the .pkg does nothing, install it from Terminal:
+
+    sudo installer -pkg ~/Downloads/Pressly-1.2.pkg -target /
+
+No sound when typing
+--------------------
+• Check the menu bar icon. If it looks faded, sounds are off or a Sleep Trigger is
+  active. Open the menu to see why, or press ⌃⌥⌘K.
+• Turn your Mac's volume up. Pressly can't play louder than the system volume.
+• Accessibility access is missing or out of date. This often happens after reinstalling
+  or updating, because macOS ties the permission to the exact app build:
+  1. Quit Pressly (menu bar icon → Quit Pressly).
+  2. Reset its permission in Terminal:
+
+         tccutil reset Accessibility app.pressly.Pressly
+
+  3. Open Pressly again and allow Accessibility when asked.
+• Sounds are muted for the frontmost app or the current output device. Check
+  Settings → Muted Apps and Settings → Sound → "Play on these outputs".
+• Bluetooth headphones add their own delay; wired or built-in speakers are instant.
+• Password fields are silent on purpose: macOS hides them from every app.
+
+I hid the menu bar icon and can't get back
+-------------------------------------------
+Open Pressly again from Applications (or Spotlight); the Settings window appears.
+Or run:
+
+    open "pressly://settings"
+
+Sleep Triggers
+--------------
+• In a meeting: macOS asks for Calendar access. If you said no, reset it with:
+
+    tccutil reset Calendar app.pressly.Pressly
+
+• Focus is on: needs Full Disk Access (System Settings → Privacy & Security →
+  Full Disk Access → Pressly ON) so it can see your Focus status.
+
+Shortcuts, links and AppleScript
+--------------------------------
+    ⌃⌥⌘K                          turn sounds on or off (change in Settings → Shortcuts)
+    ⌃⌥⌘N                          next switch
+    pressly://toggle | on | off | next | settings
+    pressly://switch/midnight      choose a switch by name
+
+    osascript -e 'tell application "Pressly" to toggle sounds'
+    osascript -e 'tell application "Pressly" to set current switch to "Skylark"'
+    osascript -e 'tell application "Pressly" to get keystrokes today'
+
+Start at login
+--------------
+Settings → General → "Open at login".
+
+Check your macOS version
+------------------------
+    sw_vers -productVersion
+
+Uninstall
+---------
+1. Quit Pressly from its menu bar menu.
+2. Run in Terminal:
+
+    rm -rf /Applications/Pressly.app
+    defaults delete app.pressly.Pressly
+    rm -rf ~/Library/Application\ Support/Pressly
+    tccutil reset All app.pressly.Pressly
+
+Build from source
+-----------------
+Needs Xcode installed (the Command Line Tools alone can't build the SwiftUI views on macOS 27).
+
+    cd Pressly
+    ./scripts/make-signing.sh         # once: keeps permissions across rebuilds
+    ./scripts/build-app.sh            # → build/Pressly.app
+    ./scripts/package.sh              # → dist/ (.pkg, .dmg, .zip, How to Install.txt)

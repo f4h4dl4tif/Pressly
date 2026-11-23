@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<dictionary title="Pressly Terminology" xmlns:xi="http://www.w3.org/2003/XInclude">
+    <xi:include href="file:///System/Library/ScriptingDefinitions/CocoaStandard.sdef" xpointer="xpointer(/dictionary/suite)"/>
+    <suite name="Pressly Suite" code="Thky" description="Control Pressly's keyboard sounds.">
+        <class-extension extends="application" description="Pressly's top-level scripting object.">
+            <property name="enabled" code="Tenb" type="boolean" access="rw" description="Whether keyboard sounds are on.">
+                <cocoa key="scriptEnabled"/>
+            </property>
+            <property name="current switch" code="Tswc" type="text" access="rw" description="The name of the switch sound in use.">
+                <cocoa key="scriptSwitch"/>
+            </property>
+            <property name="switch names" code="Tswl" access="r" description="Names of every available switch sound.">
+                <type type="text" list="yes"/>
+                <cocoa key="scriptSwitchNames"/>
+            </property>
+            <property name="sound volume" code="Tvol" type="integer" access="rw" description="Volume from 0 to 100.">
+                <cocoa key="scriptVolume"/>
+            </property>
+            <property name="sleeping" code="Tslp" type="boolean" access="r" description="Whether a sleep trigger is silencing Pressly right now.">
+                <cocoa key="scriptSleeping"/>
+            </property>
+            <property name="keystrokes today" code="Tktd" type="integer" access="r" description="Keys pressed today.">
+                <cocoa key="scriptKeysToday"/>
+            </property>
+            <property name="total keystrokes" code="Tktt" type="integer" access="r" description="Keys pressed since stats began.">
+                <cocoa key="scriptKeysTotal"/>
+            </property>
+            <property name="clicks today" code="Tcld" type="integer" access="r" description="Mouse clicks today.">
+                <cocoa key="scriptClicksToday"/>
+            </property>
+        </class-extension>
+        <command name="toggle sounds" code="ThkyTogl" description="Turn Pressly on or off.">
+            <cocoa class="PresslyToggleCommand"/>
+            <result type="boolean" description="Whether sounds are now on."/>
+        </command>
+        <command name="next switch" code="ThkyNext" description="Switch to the next switch sound.">
+            <cocoa class="PresslyNextCommand"/>
+            <result type="text" description="The new switch name."/>
+        </command>
+    </suite>
+</dictionary>

@@ -1,0 +1,4 @@
+#!/bin/bash
+# Quit a running copy so the bundle can be replaced cleanly.
+/usr/bin/pkill -x Pressly 2>/dev/null || true
+exit 0
